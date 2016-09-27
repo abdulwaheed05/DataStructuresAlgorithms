@@ -1,0 +1,15 @@
+
+# Build generated files in src
+**/objd/**/*
+**/obj/**/*
+**/bin/**/*
+**/gen/**/*
+**/*.nuspec
+**/StyleCop.Cache
+**/.vs/
+**/.vscode/
+**/TestResults/**/*
+
+# VSMSBuild generated files in CoreXT
+*.projhash*
+*.slnhash*
