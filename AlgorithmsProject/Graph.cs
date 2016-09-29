@@ -161,6 +161,94 @@ namespace Algorithms
             throw new NotImplementedException();
         }
 
+        public LinkedList<string> TopologicalSortKahnsAlgorithm()
+        {
+            Queue<string> queue = new Queue<string>();
+            Dictionary<string, int> vertexEdgeCount = new Dictionary<string, int>();
+
+            foreach (var v in this.vertices)
+            {
+                vertexEdgeCount.Add(v, 0);
+            }
+
+            foreach (var vertex in this.vertices)
+            {
+                foreach (var edge in this.vertexEdgeMap[vertex])
+                {
+                    if(vertexEdgeCount.ContainsKey(edge.To))
+                    {
+                        vertexEdgeCount[edge.To] += 1;
+                    }
+                }
+            }
+
+            foreach (var v in vertexEdgeCount.Keys)
+            {
+                if (vertexEdgeCount[v] == 0) queue.Enqueue(v);
+            }
+
+            if(queue.Count == 0) throw new InvalidOperationException("Graph is not a DAG. It does not have any vertex with 0 Indegree");
+
+            LinkedList<string> sorted = new LinkedList<string>();
+            
+            while(queue.Count > 0)
+            {
+                var v = queue.Dequeue();
+                vertexEdgeCount.Remove(v);
+                sorted.AddFirst(v);
+                foreach (var edge in this.vertexEdgeMap[v])
+                {
+                    vertexEdgeCount[edge.To] -= 1;
+
+                    if(vertexEdgeCount[edge.To] <= 0)
+                    {
+                        queue.Enqueue(edge.To);
+                    }
+                }
+            }
+
+            foreach (var edgeValue in vertexEdgeCount.Values)
+            {
+                if (edgeValue > 0) throw new InvalidOperationException("Graph is not a DAG");
+            }
+
+            return sorted;
+        }
+
+        public List<string> TopologicalSortDFS()
+        {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            foreach (var vertex in vertices)
+            {
+                visited.Add(vertex, false);
+            }
+
+            List<string> sortedNodes = new List<string>();
+            foreach (var vertex in this.vertices)
+            {
+                if(!visited[vertex])
+                {
+                    Visit(vertex, visited, sortedNodes);
+                }
+            }
+
+            return sortedNodes;
+        }
+
+        private void Visit(string v, Dictionary<string, bool> visited, List<string> sorted)
+        {
+            visited[v] = true;
+            foreach (var edge in this.vertexEdgeMap[v])
+            {
+                if(!visited[edge.To])
+                {
+                    Visit(edge.To, visited, sorted);
+                }
+            }
+
+            sorted.Add(v);
+        }
+
         #endregion
     }
 
